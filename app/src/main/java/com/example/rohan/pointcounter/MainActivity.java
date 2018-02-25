@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
 			setPlayers.setOnClickListener(new View.OnClickListener(){
 				public void onClick(View v){
 					try {
-						FileOutputStream fos = new FileOutputStream("data/data/com.example.rohan.pointcounter/players.dat");
+						FileOutputStream fos = new FileOutputStream(getApplicationContext().getFilesDir()+"/players.dat");
 						ObjectOutputStream oos = new ObjectOutputStream(fos);
 						EditText n1 = null;
 						EditText n2 = null;
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 		FrameLayout f1 = findViewById(R.id.p1);
 		FrameLayout f2 = findViewById(R.id.p2);
 		try {
-			FileInputStream fis = new FileInputStream("data/data/com.example.rohan.pointcounter/players.dat");
+			FileInputStream fis = new FileInputStream(getApplicationContext().getFilesDir()+"/players.dat");
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			ArrayList<Player> inPlayers = (ArrayList) ois.readObject();
 			TextView nt1 = null;
