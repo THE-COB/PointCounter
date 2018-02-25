@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/PointCounter.iml" filepath="$PROJECT_DIR$/PointCounter.iml" />
+      <module fileurl="file://C:\Users\rohan\AndroidStudioProjects\PointCounter\PointCounter.iml" filepath="C:\Users\rohan\AndroidStudioProjects\PointCounter\PointCounter.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://C:\Users\rohan\AndroidStudioProjects\PointCounter\app\app.iml" filepath="C:\Users\rohan\AndroidStudioProjects\PointCounter\app\app.iml" />
     </modules>
   </component>
 </project>

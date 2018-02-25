@@ -19,13 +19,15 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
+import static android.view.View.GONE;
+
 public class MainActivity extends AppCompatActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		File gameFile = new File("allGames.dat");
+		File gameFile = new File("data/data/com.example.rohan.pointcounter/allGames.dat");
 		try {
 			gameFile.createNewFile();
 		} catch (IOException e) {
@@ -33,15 +35,20 @@ public class MainActivity extends AppCompatActivity {
 		}
 		final FrameLayout f1 = findViewById(R.id.p1);
 		final FrameLayout f2 = findViewById(R.id.p2);
-		final File playerFile = new File("players.dat");
+		final File playerFile = new File("data/data/com.example.rohan.pointcounter/players.dat");
+
 		if(!playerFile.exists()){
+			try {
+				playerFile.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			Button setPlayers = findViewById(R.id.setPlayers);
 			setPlayers.setVisibility(View.VISIBLE);
 			setPlayers.setOnClickListener(new View.OnClickListener(){
 				public void onClick(View v){
 					try {
-						playerFile.createNewFile();
-						FileOutputStream fos = new FileOutputStream("players.dat");
+						FileOutputStream fos = new FileOutputStream("data/data/com.example.rohan.pointcounter/players.dat");
 						ObjectOutputStream oos = new ObjectOutputStream(fos);
 						EditText n1 = null;
 						EditText n2 = null;
@@ -57,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
 						}
 						Player p1 = new Player(n1.getText().toString(), 0);
 						Player p2 = new Player(n2.getText().toString(), 1);
+						n1.setVisibility(GONE);
+						n2.setVisibility(GONE);
 						ArrayList<Player> players = new ArrayList<>(0);
 						players.add(p1);
 						players.add(p2);
@@ -67,15 +76,20 @@ public class MainActivity extends AppCompatActivity {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-
+					setNames();
 				}
 			});
-
 		}
+		setNames();
+	}
+
+	private void setNames(){
+		FrameLayout f1 = findViewById(R.id.p1);
+		FrameLayout f2 = findViewById(R.id.p2);
 		try {
-			FileInputStream fis = new FileInputStream("players.dat");
+			FileInputStream fis = new FileInputStream("data/data/com.example.rohan.pointcounter/players.dat");
 			ObjectInputStream ois = new ObjectInputStream(fis);
-			ArrayList<Player> inPlayers = (ArrayList<Player>) ois.readObject();
+			ArrayList<Player> inPlayers = (ArrayList) ois.readObject();
 			TextView nt1 = null;
 			TextView nt2 = null;
 			for(int i = 0; i<f1.getChildCount(); i++){
@@ -98,6 +112,5 @@ public class MainActivity extends AppCompatActivity {
 			e.printStackTrace();
 		}
 	}
-
 
 }
