@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		File gameFile = new File("data/data/com.example.rohan.pointcounter/allGames.dat");
+		File gameFile = new File(getFilesDir()+"allGames.dat");
 		try {
 			gameFile.createNewFile();
 		} catch (IOException e) {
@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
 		}
 		final FrameLayout f1 = findViewById(R.id.p1);
 		final FrameLayout f2 = findViewById(R.id.p2);
-		final File playerFile = new File("data/data/com.example.rohan.pointcounter/players.dat");
+		final File playerFile = new File(getFilesDir()+"players.dat");
 
 		if(!playerFile.exists()){
 			try {
@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
 			setPlayers.setOnClickListener(new View.OnClickListener(){
 				public void onClick(View v){
 					try {
-						FileOutputStream fos = new FileOutputStream(getApplicationContext().getFilesDir()+"/players.dat");
+						FileOutputStream fos = openFileOutput("players.dat", MODE_PRIVATE);
 						ObjectOutputStream oos = new ObjectOutputStream(fos);
 						EditText n1 = null;
 						EditText n2 = null;
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 		FrameLayout f1 = findViewById(R.id.p1);
 		FrameLayout f2 = findViewById(R.id.p2);
 		try {
-			FileInputStream fis = new FileInputStream(getApplicationContext().getFilesDir()+"/players.dat");
+			FileInputStream fis = openFileInput("players.dat");
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			ArrayList<Player> inPlayers = (ArrayList) ois.readObject();
 			TextView nt1 = null;
