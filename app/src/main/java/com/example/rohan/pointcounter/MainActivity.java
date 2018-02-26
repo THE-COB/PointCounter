@@ -1,14 +1,20 @@
 package com.example.rohan.pointcounter;
 
+import android.app.FragmentManager;
 import android.content.Context;
 import android.provider.DocumentsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,90 +33,64 @@ public class MainActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		File gameFile = new File(getFilesDir()+"allGames.dat");
+		pFile = new File(getFilesDir(), "players.json");
+		boolean isFile = false;
 		try {
-			gameFile.createNewFile();
+			isFile = pFile.createNewFile();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		final FrameLayout f1 = findViewById(R.id.p1);
-		final FrameLayout f2 = findViewById(R.id.p2);
-		final File playerFile = new File(getFilesDir()+"players.dat");
-
-		if(!playerFile.exists()){
-			try {
-				playerFile.createNewFile();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			Button setPlayers = findViewById(R.id.setPlayers);
-			setPlayers.setVisibility(View.VISIBLE);
-			setPlayers.setOnClickListener(new View.OnClickListener(){
-				public void onClick(View v){
-					try {
-						FileOutputStream fos = openFileOutput("players.dat", MODE_PRIVATE);
-						ObjectOutputStream oos = new ObjectOutputStream(fos);
-						EditText n1 = null;
-						EditText n2 = null;
-						for(int i = 0; i<f1.getChildCount(); i++){
-							View temp1 = f1.getChildAt(i);
-							View temp2 = f2.getChildAt(i);
-							if(temp1.getId() == R.id.playerName){
-								n1 = (EditText) temp1;
-							}
-							if(temp2.getId() == R.id.playerName){
-								n2 = (EditText) temp2;
-							}
-						}
-						Player p1 = new Player(n1.getText().toString(), 0);
-						Player p2 = new Player(n2.getText().toString(), 1);
-						n1.setVisibility(GONE);
-						n2.setVisibility(GONE);
-						ArrayList<Player> players = new ArrayList<>(0);
-						players.add(p1);
-						players.add(p2);
-						oos.writeObject(players);
-
-					} catch (FileNotFoundException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					setNames();
-				}
-			});
+		if(isFile){
+			setNewNames();
 		}
-		setNames();
+		useOldNames();
 	}
 
-	private void setNames(){
-		FrameLayout f1 = findViewById(R.id.p1);
-		FrameLayout f2 = findViewById(R.id.p2);
-		try {
-			FileInputStream fis = openFileInput("players.dat");
-			ObjectInputStream ois = new ObjectInputStream(fis);
-			ArrayList<Player> inPlayers = (ArrayList) ois.readObject();
-			TextView nt1 = null;
-			TextView nt2 = null;
-			for(int i = 0; i<f1.getChildCount(); i++){
-				View temp1 = f1.getChildAt(i);
-				View temp2 = f2.getChildAt(i);
-				if(temp1.getId() == R.id.playerName){
-					nt1 = (TextView) temp1;
-				}
-				if(temp2.getId() == R.id.playerName){
-					nt2 = (TextView) temp2;
+	private File pFile;
+	private android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
+	private AddPlayer p1 = (AddPlayer)fm.findFragmentById(R.id.p1);
+	private AddPlayer p2 = (AddPlayer)fm.findFragmentById(R.id.p2);
+
+	private void setNewNames(){
+		Button setNames = findViewById(R.id.setNames);
+		setNames.setVisibility(View.VISIBLE);
+		setNames.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				try {
+					Player player1 = new Player(p1.getEText(), 1);
+					Player player2 = new Player(p2.getEText(), 2);
+					FileOutputStream fos = openFileOutput("players.json", MODE_PRIVATE);
+					ObjectOutputStream oos = new ObjectOutputStream(fos);
+					JSONObject jobj = new JSONObject();
+					jobj.put(player1.getId(), player1.getName());
+					jobj.put(player2.getId(), player2.getName());
+					oos.writeObject(jobj.toString());
+					oos.close();
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (JSONException e) {
+					e.printStackTrace();
 				}
 			}
-			nt1.setText(inPlayers.get(0).getName());
-			nt2.setText(inPlayers.get(1).getName());
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+		});
+	}
+	private void useOldNames(){
+		try {
+			FileInputStream fis = openFileInput("players.json");
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			JSONArray jArr = new JSONArray(ois.readObject());
+			p1.setNText((String) jArr.get(0));
+			p2.setNText((String) jArr.get(1));
+			ois.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
 		}
 	}
-
 }
